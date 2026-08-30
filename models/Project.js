@@ -14,23 +14,19 @@ const projectSchema = new mongoose.Schema({
     default: "2024"
   },
   technologies: {
-    type: [String], // Array of strings like "React", "Node.js"
+    type: [String],
     default: [],
   },
-  number: {
-    type: String,
-    default: "01",
-  },
   image: {
-    type: String, // Primary image path
+    type: String,
     default: "",
   },
   images: {
-    type: [String], // Array of uploaded image paths
+    type: [String],
     default: [],
   },
   link: {
-    type: String, // Project URL or GitHub link
+    type: String,
     default: "",
   }
 }, { timestamps: true });

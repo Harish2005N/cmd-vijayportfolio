@@ -189,8 +189,6 @@
             <h2>Projects</h2>
             <form id="projectForm" enctype="multipart/form-data">
                 <input type="hidden" id="projectId">
-                <div class="form-group"><label>Project Number</label><input type="text" id="projectNumber" name="number"
-                        required></div>
                 <div class="form-group"><label>Title</label><input type="text" id="projectTitle" name="title" required>
                 </div>
                 <div class="form-group"><label>Date</label><input type="text" id="projectDate" name="date" required>
@@ -425,7 +423,6 @@
             async function editProject(id) {
                 const project = await api(`/api/projects/${id}`);
                 document.getElementById('projectId').value = project._id;
-                document.getElementById('projectNumber').value = project.number || '';
                 document.getElementById('projectTitle').value = project.title || '';
                 document.getElementById('projectDate').value = project.date || '';
                 document.getElementById('projectDescription').value = project.description || '';

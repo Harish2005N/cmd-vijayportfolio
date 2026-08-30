@@ -448,11 +448,10 @@
             container.innerHTML = projects.map(p => {
                 const techTags = (p.technologies || []).map(t => `<span class="tech-tag">${esc(t)}</span>`).join('');
                 const imgs = Array.isArray(p.images) && p.images.length ? p.images : (p.image ? [p.image] : []);
-                const slideshowId = `project-slideshow-${esc(p.number || '0')}`;
+                const slideshowId = `project-slideshow-${esc(p._id || '0')}`;
                 const imageMarkup = buildSlideshowMarkup(imgs, p.title, slideshowId);
                 return `<div class="project-card">
                     ${imageMarkup}
-                    <div class="project-num">${esc(p.number || '')}</div>
                     <div class="project-title">${esc(p.title)}</div>
                     <div class="project-date">${esc(p.date || '')}</div>
                     <p class="project-desc">${esc(p.description)}</p>

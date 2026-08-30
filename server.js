@@ -90,7 +90,7 @@ app.get('/api/projects/:id', async (req, res) => {
 // Add a new project (with optional image upload)
 app.post('/api/projects', upload.array('images', 8), async (req, res) => {
   try {
-    const { title, description, date, technologies, number, link } = req.body || {};
+    const { title, description, date, technologies, link } = req.body || {};
 
     let techArray = technologies;
     if (typeof technologies === 'string') {
@@ -106,7 +106,6 @@ app.post('/api/projects', upload.array('images', 8), async (req, res) => {
       description,
       date,
       technologies: techArray,
-      number,
       link: link || '',
       image: images[0] || '',
       images
@@ -125,7 +124,7 @@ app.put('/api/projects/:id', upload.array('images', 8), async (req, res) => {
     const project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ message: 'Project not found' });
 
-    const { title, description, date, technologies, number, link } = req.body || {};
+    const { title, description, date, technologies, link } = req.body || {};
     let techArray = technologies;
     if (typeof technologies === 'string') {
       techArray = technologies.split(',').map(tech => tech.trim()).filter(tech => tech.length > 0);
@@ -155,7 +154,6 @@ app.put('/api/projects/:id', upload.array('images', 8), async (req, res) => {
     project.description = description || project.description;
     project.date = date || project.date;
     project.technologies = techArray || project.technologies;
-    project.number = number || project.number;
     project.link = link !== undefined ? link : project.link;
     project.images = images;
     project.image = images[0] || '';

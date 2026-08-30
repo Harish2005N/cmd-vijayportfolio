@@ -28,7 +28,6 @@ async function seed() {
       description: 'Engineered a full-stack inventory management system using the MERN stack for efficient product tracking and stock management. Implemented dynamic CRUD operations and role-based access to streamline inventory workflows and reduce manual errors. Deployed a scalable web application with RESTful APIs, enabling secure data handling and seamless user interaction.',
       date: '2025',
       technologies: ['MongoDB', 'Express.js', 'React.js', 'Node.js', 'REST API'],
-      number: '01',
       link: 'https://github.com/harishvhsh18',
       images: [
         'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600',
@@ -41,7 +40,6 @@ async function seed() {
       description: 'Built a web-based tourism platform enabling users to discover travel packages, plan trips, and manage bookings efficiently. Integrated secure login, personalized package views, and booking workflows to enhance user engagement and usability. Structured backend services and database interactions to support reliable data processing and smooth application performance.',
       date: '2026',
       technologies: ['MongoDB', 'Express.js', 'React.js', 'Node.js', 'REST API'],
-      number: '02',
       link: 'https://github.com/harishvhsh18',
       images: [
         'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600',
@@ -54,7 +52,6 @@ async function seed() {
       description: 'Developed a multi-client chat application in Java using socket programming to enable real-time communication over a computer network. Implemented a client-server architecture to establish reliable socket connections and support simultaneous message exchange among multiple users. Applied Computer Networks concepts to manage client connections, message transmission, and efficient communication between connected clients.',
       date: '2025',
       technologies: ['Java', 'Socket Programming', 'Client-Server', 'Computer Networks'],
-      number: '03',
       link: 'https://github.com/harishvhsh18',
       images: [
         'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600',
