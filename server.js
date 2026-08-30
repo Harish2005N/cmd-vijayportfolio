@@ -15,13 +15,13 @@ const Skill = require('./models/Skill');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (inside project folder)
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Multer config for image uploads
+// Multer config for local image storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
@@ -31,9 +31,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|gif|webp|svg/;
+    const allowed = /jpeg|jpg|png|gif|webp/;
     const ext = allowed.test(path.extname(file.originalname).toLowerCase());
     const mime = allowed.test(file.mimetype);
     if (ext && mime) return cb(null, true);
