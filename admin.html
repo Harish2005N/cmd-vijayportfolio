@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Portfolio Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #0a0a0f;
+            color: #e8e8f0;
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .admin-container {
+            width: 100%;
+            max-width: 980px;
+            background: #12121c;
+            border: 1px solid #1e1e30;
+            border-radius: 14px;
+            padding: 2rem;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #6c63ff;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: #1e1e30;
+            color: #e8e8f0;
+            border: 1px solid #2a2a3d;
+            padding: 0.7rem 1rem;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #6c63ff, #00e5ff);
+        }
+
+        .section-card {
+            border: 1px solid #1e1e30;
+            border-radius: 12px;
+            padding: 1rem;
+            background: #0f0f18;
+            margin-bottom: 1.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+            color: #6b6b8a;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: #14141f;
+            border: 1px solid #1e1e30;
+            border-radius: 8px;
+            color: #e8e8f0;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #6c63ff;
+        }
+
+        button {
+            background: linear-gradient(135deg, #6c63ff, #00e5ff);
+            color: white;
+            border: none;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: #1e1e30;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid #1e1e30;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-top: 0.7rem;
+        }
+
+        .item-actions button {
+            margin-left: 0.3rem;
+            padding: 0.45rem 0.8rem;
+        }
+
+        #message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success {
+            background: rgba(0, 229, 255, 0.1);
+            color: #00e5ff;
+            border: 1px solid #00e5ff;
+        }
+
+        .error {
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        .nav-link {
+            display: block;
+            margin-top: 1rem;
+            text-align: center;
+            color: #6b6b8a;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            color: #00e5ff;
+        }
+
+        @media (max-width:700px) {
+            body {
+                padding: 1rem;
+            }
+
+            .admin-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <h1>Portfolio Admin Panel</h1>
+        <p style="color:#6b6b8a; margin-bottom:1rem;">Manage projects, courses, certifications, achievements, and
+            skills.</p>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-target="projects-section">Projects</button>
+            <button class="tab-btn" data-target="courses-section">Courses &amp; Certs</button>
+            <button class="tab-btn" data-target="achievements-section">Achievements</button>
+            <button class="tab-btn" data-target="skills-section">Skills</button>
+        </div>
+
+        <div id="message"></div>
+
+        <div id="projects-section" class="section-card">
+            <h2>Projects</h2>
+            <form id="projectForm" enctype="multipart/form-data">
+                <input type="hidden" id="projectId">
+                <div class="form-group"><label>Project Number</label><input type="text" id="projectNumber" name="number"
+                        required></div>
+                <div class="form-group"><label>Title</label><input type="text" id="projectTitle" name="title" required>
+                </div>
+                <div class="form-group"><label>Date</label><input type="text" id="projectDate" name="date" required>
+                </div>
+                <div class="form-group"><label>Description</label><textarea id="projectDescription" name="description"
+                        rows="4" required></textarea></div>
+                <div class="form-group"><label>Technologies (comma-separated)</label><input type="text"
+                        id="projectTechnologies" name="technologies"></div>
+                <div class="form-group"><label>Project Link</label><input type="text" id="projectLink" name="link">
+                </div>
+                <div class="form-group"><label>Project Photos (multiple)</label><input type="file" id="projectImages"
+                        name="images" multiple accept="image/*"></div>
+                <div class="form-group"><label>Existing Images</label>
+                    <div id="projectExistingImages"></div>
+                </div>
+                <button type="submit">Save Project</button>
+                <button type="button" class="secondary" onclick="resetProjectForm()"
+                    style="margin-left:0.4rem;">Reset</button>
+            </form>
+            <div id="projectsList" style="margin-top:1rem;"></div>
+        </div>
+
+        <div id="courses-section" class="section-card hidden">
+            <h2>Courses &amp; Certifications</h2>
+            <form id="courseForm" enctype="multipart/form-data">
+                <input type="hidden" id="courseId">
+                <div class="form-group"><label>Title</label><input type="text" id="courseTitle" name="title" required></div>
+                <div class="form-group"><label>Platform / Issuer</label><input type="text" id="coursePlatform" name="platform" required></div>
+                <div class="form-group"><label>Date</label><input type="text" id="courseDate" name="date" required></div>
+                <div class="form-group"><label>Link</label><input type="text" id="courseLink" name="link"></div>
+                <div class="form-group"><label>Certificate URL</label><input type="text" id="courseCertificateUrl" name="certificate_url"></div>
+                <div class="form-group"><label>Photos (multiple)</label><input type="file" id="courseImages" name="images" multiple accept="image/*"></div>
+                <div class="form-group"><label>Existing Images</label><div id="courseExistingImages"></div></div>
+                <button type="submit">Save</button>
+                <button type="button" class="secondary" onclick="resetCourseForm()" style="margin-left:0.4rem;">Reset</button>
+            </form>
+            <div id="coursesList" style="margin-top:1rem;"></div>
+        </div>
+
+        <div id="achievements-section" class="section-card hidden">
+            <h2>Achievements</h2>
+            <form id="achievementForm">
+                <input type="hidden" id="achievementId">
+                <div class="form-group"><label>Icon</label><input type="text" id="achievementIcon" placeholder="🏆">
+                </div>
+                <div class="form-group"><label>Text</label><textarea id="achievementText" rows="3"
+                        required></textarea></div>
+                <button type="submit">Save Achievement</button>
+                <button type="button" class="secondary" onclick="resetAchievementForm()"
+                    style="margin-left:0.4rem;">Reset</button>
+            </form>
+            <div id="achievementsList" style="margin-top:1rem;"></div>
+        </div>
+
+        <div id="skills-section" class="section-card hidden">
+            <h2>Skills</h2>
+            <form id="skillForm">
+                <input type="hidden" id="skillId">
+                <div class="form-group"><label>Category</label><input type="text" id="skillCategory" required></div>
+                <div class="form-group"><label>Icon</label><input type="text" id="skillIcon" placeholder="⚙️"></div>
+                <div class="form-group"><label>Items (comma-separated)</label><input type="text" id="skillItems">
+                </div>
+                <button type="submit">Save Skill</button>
+                <button type="button" class="secondary" onclick="resetSkillForm()"
+                    style="margin-left:0.4rem;">Reset</button>
+            </form>
+            <div id="skillsList" style="margin-top:1rem;"></div>
+        </div>
+
+        <a href="/" class="nav-link">← Back to Portfolio</a>
+        </div>
+
+        <script>
+            const messageEl = document.getElementById('message');
+            const state = { editingProjectId: null, editingCourseId: null, editingCertificationId: null, editingAchievementId: null, editingSkillId: null };
+
+            function showMessage(text, type = 'success') {
+                messageEl.textContent = text;
+                messageEl.className = type;
+                messageEl.style.display = 'block';
+                setTimeout(() => messageEl.style.display = 'none', 5000);
+            }
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.querySelectorAll('.section-card').forEach(card => card.classList.add('hidden'));
+                    document.getElementById(btn.dataset.target).classList.remove('hidden');
+                });
+            });
+
+            async function api(url, options = {}) {
+                const res = await fetch(url, options);
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.message || 'Request failed');
+                return data;
+            }
+
+            function resetProjectForm() { document.getElementById('projectForm').reset(); state.editingProjectId = null; document.getElementById('projectId').value = ''; state.existingProjectImages = []; renderProjectImages(); }
+            function resetCourseForm() { document.getElementById('courseForm').reset(); state.editingCourseId = null; document.getElementById('courseId').value = ''; state.existingCourseImages = []; renderCourseImages(); }
+            function resetCertificationForm() { document.getElementById('certificationForm').reset(); state.editingCertificationId = null; document.getElementById('certificationId').value = ''; state.existingCertImages = []; renderCertImages(); }
+            function resetAchievementForm() { document.getElementById('achievementForm').reset(); state.editingAchievementId = null; document.getElementById('achievementId').value = ''; }
+            function resetSkillForm() { document.getElementById('skillForm').reset(); state.editingSkillId = null; document.getElementById('skillId').value = ''; }
+
+            document.getElementById('projectForm').addEventListener('submit', async e => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                // Add existing images that weren't removed
+                (state.existingProjectImages || []).forEach(img => formData.append('existingImages', img));
+                try {
+                    const id = state.editingProjectId;
+                    const res = await fetch(id ? `/api/projects/${id}` : '/api/projects', { method: id ? 'PUT' : 'POST', body: formData });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) throw new Error(data.message || 'Failed to save project');
+                    showMessage('Project saved successfully');
+                    resetProjectForm();
+                    loadProjects();
+                } catch (err) { showMessage(err.message, 'error'); }
+            });
+
+            document.getElementById('courseForm').addEventListener('submit', async e => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                (state.existingCourseImages || []).forEach(img => formData.append('existingImages', img));
+                try {
+                    const id = state.editingCourseId;
+                    const res = await fetch(id ? `/api/courses/${id}` : '/api/courses', { method: id ? 'PUT' : 'POST', body: formData });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) throw new Error(data.message || 'Failed to save');
+                    showMessage('Saved successfully');
+                    resetCourseForm();
+                    loadCourses();
+                } catch (err) { showMessage(err.message, 'error'); }
+            });
+
+            document.getElementById('achievementForm').addEventListener('submit', async e => {
+                e.preventDefault();
+                const payload = { icon: document.getElementById('achievementIcon').value, text: document.getElementById('achievementText').value };
+                try {
+                    const id = state.editingAchievementId;
+                    await api(id ? `/api/achievements/${id}` : '/api/achievements', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    showMessage('Achievement saved successfully');
+                    resetAchievementForm();
+                    loadAchievements();
+                } catch (err) { showMessage(err.message, 'error'); }
+            });
+
+            document.getElementById('skillForm').addEventListener('submit', async e => {
+                e.preventDefault();
+                const payload = {
+                    category: document.getElementById('skillCategory').value,
+                    icon: document.getElementById('skillIcon').value,
+                    items: document.getElementById('skillItems').value.split(',').map(s => s.trim()).filter(Boolean)
+                };
+                try {
+                    const id = state.editingSkillId;
+                    await api(id ? `/api/skills/${id}` : '/api/skills', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    showMessage('Skill saved successfully');
+                    resetSkillForm();
+                    loadSkills();
+                } catch (err) { showMessage(err.message, 'error'); }
+            });
+
+            async function loadProjects() {
+                try {
+                    const projects = await api('/api/projects');
+                    document.getElementById('projectsList').innerHTML = projects.length ? projects.map(p => `
+                <div class="list-item">
+                    <div style="display:flex;gap:1rem;align-items:center;">
+                        ${p.images && p.images.length ? `<img src="${p.images[0]}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;">` : '<div style="width:60px;height:40px;background:#1e1e30;border-radius:6px;"></div>'}
+                        <div><strong>${p.title}</strong><br><small>${p.date} • ${p.number} • ${p.images ? p.images.length : 0} images</small></div>
+                    </div>
+                    <div class="item-actions">
+                        <button onclick="editProject('${p._id}')">Edit</button>
+                        <button class="secondary" onclick="deleteProject('${p._id}')">Delete</button>
+                    </div>
+                </div>`).join('') : '<p style="color:#6b6b8a;">No projects yet.</p>';
+                } catch (err) { showMessage(err.message, 'error'); }
+            }
+
+            async function loadCourses() {
+                try {
+                    const courses = await api('/api/courses');
+                    document.getElementById('coursesList').innerHTML = courses.length ? courses.map(c => `
+                <div class="list-item">
+                    <div style="display:flex;gap:1rem;align-items:center;">
+                        ${c.images && c.images.length ? `<img src="${c.images[0]}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;">` : '<div style="width:60px;height:40px;background:#1e1e30;border-radius:6px;"></div>'}
+                        <div><strong>${c.title}</strong><br><small>${c.platform} • ${c.date} • ${c.images ? c.images.length : 0} images</small></div>
+                    </div>
+                    <div class="item-actions">
+                        <button onclick="editCourse('${c._id}')">Edit</button>
+                        <button class="secondary" onclick="deleteCourse('${c._id}')">Delete</button>
+                    </div>
+                </div>`).join('') : '<p style="color:#6b6b8a;">No courses yet.</p>';
+                } catch (err) { showMessage(err.message, 'error'); }
+            }
+
+            async function loadAchievements() {
+                try {
+                    const items = await api('/api/achievements');
+                    document.getElementById('achievementsList').innerHTML = items.length ? items.map(a => `
+                <div class="list-item">
+                    <div><strong>${a.icon} ${a.text}</strong></div>
+                    <div class="item-actions">
+                        <button onclick="editAchievement('${a._id}')">Edit</button>
+                        <button class="secondary" onclick="deleteAchievement('${a._id}')">Delete</button>
+                    </div>
+                </div>`).join('') : '<p style="color:#6b6b8a;">No achievements yet.</p>';
+                } catch (err) { showMessage(err.message, 'error'); }
+            }
+
+            async function loadSkills() {
+                try {
+                    const items = await api('/api/skills');
+                    document.getElementById('skillsList').innerHTML = items.length ? items.map(s => `
+                <div class="list-item">
+                    <div><strong>${s.category}</strong><br><small>${(s.items || []).join(', ')}</small></div>
+                    <div class="item-actions">
+                        <button onclick="editSkill('${s._id}')">Edit</button>
+                        <button class="secondary" onclick="deleteSkill('${s._id}')">Delete</button>
+                    </div>
+                </div>`).join('') : '<p style="color:#6b6b8a;">No skills yet.</p>';
+                } catch (err) { showMessage(err.message, 'error'); }
+            }
+
+            async function deleteProject(id) { if (!confirm('Delete this project?')) return; try { await api(`/api/projects/${id}`, { method: 'DELETE' }); showMessage('Project deleted'); loadProjects(); } catch (err) { showMessage(err.message, 'error'); } }
+            async function deleteCourse(id) { if (!confirm('Delete this item?')) return; try { await api(`/api/courses/${id}`, { method: 'DELETE' }); showMessage('Item deleted'); loadCourses(); } catch (err) { showMessage(err.message, 'error'); } }
+            async function deleteAchievement(id) { if (!confirm('Delete this achievement?')) return; try { await api(`/api/achievements/${id}`, { method: 'DELETE' }); showMessage('Achievement deleted'); loadAchievements(); } catch (err) { showMessage(err.message, 'error'); } }
+            async function deleteSkill(id) { if (!confirm('Delete this skill?')) return; try { await api(`/api/skills/${id}`, { method: 'DELETE' }); showMessage('Skill deleted'); loadSkills(); } catch (err) { showMessage(err.message, 'error'); } }
+
+            async function editProject(id) {
+                const project = await api(`/api/projects/${id}`);
+                document.getElementById('projectId').value = project._id;
+                document.getElementById('projectNumber').value = project.number || '';
+                document.getElementById('projectTitle').value = project.title || '';
+                document.getElementById('projectDate').value = project.date || '';
+                document.getElementById('projectDescription').value = project.description || '';
+                document.getElementById('projectTechnologies').value = (project.technologies || []).join(', ');
+                document.getElementById('projectLink').value = project.link || '';
+                state.editingProjectId = id;
+                state.existingProjectImages = project.images || [];
+                renderProjectImages();
+                document.querySelector('[data-target="projects-section"]').click();
+            }
+
+            function renderProjectImages() {
+                const container = document.getElementById('projectExistingImages');
+                const images = state.existingProjectImages || [];
+                container.innerHTML = images.length ? images.map((img, i) => `
+            <div style="position:relative;display:inline-block;margin:0.3rem;">
+                <img src="${img}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #2a2a3d;">
+                <button type="button" onclick="removeProjectImage(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ff6b6b;color:white;border:none;cursor:pointer;font-size:12px;padding:0;">×</button>
+            </div>
+        `).join('') : '<p style="color:#6b6b8a;font-size:0.85rem;">No existing images</p>';
+            }
+
+            function removeProjectImage(index) {
+                state.existingProjectImages.splice(index, 1);
+                renderProjectImages();
+            }
+
+            async function editCourse(id) {
+                const course = await api(`/api/courses/${id}`);
+                document.getElementById('courseId').value = course._id;
+                document.getElementById('courseTitle').value = course.title || '';
+                document.getElementById('coursePlatform').value = course.platform || '';
+                document.getElementById('courseDate').value = course.date || '';
+                document.getElementById('courseLink').value = course.link || '';
+                document.getElementById('courseCertificateUrl').value = course.certificate_url || '';
+                state.editingCourseId = id;
+                state.existingCourseImages = course.images || [];
+                renderCourseImages();
+                document.querySelector('[data-target="courses-section"]').click();
+            }
+
+            function renderCourseImages() {
+                const container = document.getElementById('courseExistingImages');
+                const images = state.existingCourseImages || [];
+                container.innerHTML = images.length ? images.map((img, i) => `
+            <div style="position:relative;display:inline-block;margin:0.3rem;">
+                <img src="${img}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #2a2a3d;">
+                <button type="button" onclick="removeCourseImage(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ff6b6b;color:white;border:none;cursor:pointer;font-size:12px;padding:0;">×</button>
+            </div>
+        `).join('') : '<p style="color:#6b6b8a;font-size:0.85rem;">No existing images</p>';
+            }
+
+            function removeCourseImage(index) {
+                state.existingCourseImages.splice(index, 1);
+                renderCourseImages();
+            }
+
+            async function editCertification(id) {
+                const cert = await api(`/api/certifications/${id}`);
+                document.getElementById('certificationId').value = cert._id;
+                document.getElementById('certificationTitle').value = cert.title || '';
+                document.getElementById('certificationIssuer').value = cert.issuer || '';
+                document.getElementById('certificationDate').value = cert.date || '';
+                document.getElementById('certificationCredentialId').value = cert.credential_id || '';
+                document.getElementById('certificationLink').value = cert.link || '';
+                state.editingCertificationId = id;
+                state.existingCertImages = cert.images || [];
+                renderCertImages();
+                document.querySelector('[data-target="certifications-section"]').click();
+            }
+
+            function renderCertImages() {
+                const container = document.getElementById('certExistingImages');
+                const images = state.existingCertImages || [];
+                container.innerHTML = images.length ? images.map((img, i) => `
+            <div style="position:relative;display:inline-block;margin:0.3rem;">
+                <img src="${img}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;border:1px solid #2a2a3d;">
+                <button type="button" onclick="removeCertImage(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ff6b6b;color:white;border:none;cursor:pointer;font-size:12px;padding:0;">×</button>
+            </div>
+        `).join('') : '<p style="color:#6b6b8a;font-size:0.85rem;">No existing images</p>';
+            }
+
+            function removeCertImage(index) {
+                state.existingCertImages.splice(index, 1);
+                renderCertImages();
+            }
+
+            async function editAchievement(id) {
+                const achievement = await api(`/api/achievements/${id}`);
+                document.getElementById('achievementId').value = achievement._id;
+                document.getElementById('achievementIcon').value = achievement.icon || '';
+                document.getElementById('achievementText').value = achievement.text || '';
+                state.editingAchievementId = id;
+                document.querySelector('[data-target="achievements-section"]').click();
+            }
+
+            async function editSkill(id) {
+                const skill = await api(`/api/skills/${id}`);
+                document.getElementById('skillId').value = skill._id;
+                document.getElementById('skillCategory').value = skill.category || '';
+                document.getElementById('skillIcon').value = skill.icon || '';
+                document.getElementById('skillItems').value = (skill.items || []).join(', ');
+                state.editingSkillId = id;
+                document.querySelector('[data-target="skills-section"]').click();
+            }
+
+            loadProjects(); loadCourses(); loadAchievements(); loadSkills();
+        </script>
+</body>
+
+</html>

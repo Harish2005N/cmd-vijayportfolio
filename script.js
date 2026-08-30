@@ -9,9 +9,8 @@
     //  GLOBAL REFERENCES (set once after DOM ready)
     // -------------------------------------------------------
     let introScreen, navbar;
-    let heroSection, heroImage1, heroImage2;
+    let heroSection, heroProfileImg;
     let heroNameEn, heroNameTa;
-    let sliceEffect, sliceSVG;
     let introComplete = false;
 
     // -------------------------------------------------------
@@ -22,12 +21,9 @@
         introScreen = document.getElementById('intro-screen');
         navbar      = document.getElementById('navbar');
         heroSection = document.querySelector('.hero-scroll-section');
-        heroImage1  = document.getElementById('hero-vijay-one');
-        heroImage2  = document.getElementById('hero-vijay-two');
+        heroProfileImg = document.getElementById('hero-profile-img');
         heroNameEn  = document.getElementById('hero-name-en');
         heroNameTa  = document.getElementById('hero-name-ta');
-        sliceEffect = document.getElementById('slice-effect');
-        sliceSVG    = sliceEffect ? sliceEffect.querySelector('svg') : null;
 
         // Add SVG blur filter for the glow
         injectSVGFilter();
@@ -41,6 +37,9 @@
         // Setup scroll-based hero transition
         setupHeroScrollTransition();
 
+        // Setup About section scroll-driven animation
+        setupAboutSection();
+
         // Other portfolio features
         setupScrollToTop();
         setupSmoothScrolling();
@@ -52,18 +51,7 @@
     //  INJECT SVG FILTER (for glow on slice)
     // -------------------------------------------------------
     function injectSVGFilter() {
-        const ns = 'http://www.w3.org/2000/svg';
-        const defs = document.createElementNS(ns, 'defs');
-
-        const filter = document.createElementNS(ns, 'filter');
-        filter.setAttribute('id', 'sliceBlur');
-
-        const blur = document.createElementNS(ns, 'feGaussianBlur');
-        blur.setAttribute('stdDeviation', '1.5');
-        filter.appendChild(blur);
-        defs.appendChild(filter);
-
-        if (sliceSVG) sliceSVG.insertBefore(defs, sliceSVG.firstChild);
+        // SVG filter no longer needed - removed slice effect
     }
 
     // -------------------------------------------------------
@@ -133,189 +121,126 @@
     }
 
     // -------------------------------------------------------
-    //  APPLY HERO TRANSITION — all phases driven by progress
+    //  APPLY HERO TRANSITION — name fade transition
     // -------------------------------------------------------
-      function applyHeroTransition(progress) {
-          // --- PHASE 1: 0.00 → 0.35  — STATIC, image 1 fully visible ---
-          if (progress <= 0.35) {
-              // Image 1 fully visible, clean
-              heroImage1.style.transform = 'translate3d(0,0,0) scale(1.25)';
-              heroImage1.style.filter    = 'none';
-              heroImage1.style.opacity   = '1';
-
-             // Image 2 fully masked
-             heroImage2.style.clipPath  = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
-
-             // English name visible, Tamil hidden
-             heroNameEn.style.clipPath  = 'none';
-             heroNameEn.style.opacity   = '1';
-             heroNameTa.style.clipPath  = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
-
-             // Slice invisible
-             if (sliceEffect) sliceEffect.style.opacity = '0';
-             return;
-         }
-
-         // --- PHASE 2: 0.35 → 0.45  — CINEMATIC TENSION ---
-         if (progress <= 0.45) {
-             const t = (progress - 0.35) / 0.10; // 0..1
-
-             // Slight scale + brightness build-up on image 1
-              const sc = 1.25 + t * 0.02;     // 1.25 → 1.27
-             const br = 1 + t * 0.08;        // 1 → 1.08
-             heroImage1.style.transform = `translate3d(0,0,0) scale(${sc})`;
-             heroImage1.style.filter    = `brightness(${br})`;
-             heroImage1.style.opacity   = '1';
-
-             // Image 2 still fully masked
-             heroImage2.style.clipPath  = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
-
-             // Names unchanged
-             heroNameEn.style.clipPath  = 'none';
-             heroNameEn.style.opacity   = '1';
-             heroNameTa.style.clipPath  = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
-
-             // Slice still invisible
-             if (sliceEffect) sliceEffect.style.opacity = '0';
-             return;
-         }
-
-         // --- PHASE 3: 0.45 → 0.60  — HAND-SLICE TRANSITION ---
-         if (progress <= 0.60) {
-             const t = (progress - 0.45) / 0.15; // 0..1
-
-             // Diagonal clip-path reveal for Image 2.
-            // The leading edge is diagonal — it sweeps left-to-right
-            // with the top slightly ahead of the bottom (or vice-versa).
-            //
-            // We define the "reveal boundary" as a diagonal band.
-            // revealX is the main horizontal position of the sweep (0..1).
-            // The diagonal offset shifts the top vs bottom by ~15% of width.
-            const revealX  = t;               // 0 → 1
-            const diagOff  = 0.15;            // diagonal tilt amount
-
-            // Image 2 clip-path: reveal from the left
-            const i2_topRight    = Math.min(revealX + diagOff, 1) * 100;
-            const i2_bottomRight = Math.min(revealX, 1) * 100;
-            heroImage2.style.clipPath = `polygon(
-                0 0,
-                ${i2_topRight}% 0,
-                ${i2_bottomRight}% 100%,
-                0 100%
-            )`;
-
-            // Image 1: fades out as image 2 sweeps in
-            const fadeOut = 1 - t;
-             heroImage1.style.transform = 'translate3d(0,0,0) scale(1.27)';
-            heroImage1.style.filter    = `brightness(${1.08 - t * 0.15})`;
-            heroImage1.style.opacity   = String(Math.max(0, fadeOut));
-
-            // ---- SVG HAND-SLICE VISUAL ----
-            // The slice line follows the leading diagonal edge of the reveal.
-            // It appears at t≈0 (progress=0.45), crosses the image, exits at t≈1 (progress=0.60).
-            if (sliceEffect && sliceSVG) {
-                // Slice is visible only during this phase
-                // Fade in at start, fade out at end
-                let sliceOpacity = 1;
-                if (t < 0.1)      sliceOpacity = t / 0.1;          // fade in
-                else if (t > 0.85) sliceOpacity = (1 - t) / 0.15;  // fade out
-                sliceEffect.style.opacity = String(Math.max(0, sliceOpacity));
-
-                // The slice line: top-right of the diagonal to bottom-right
-                const lineTopX = Math.min((revealX + diagOff) * 100, 100);
-                const lineBotX = Math.min(revealX * 100, 100);
-
-                // Update the SVG elements
-                const sliceLine  = sliceSVG.querySelector('.slice-core');
-                const sliceShadow = sliceSVG.querySelector('.slice-shadow');
-                const sliceGlow   = sliceSVG.querySelector('.slice-glow');
-
-                if (sliceLine) {
-                    sliceLine.setAttribute('x1', lineTopX);
-                    sliceLine.setAttribute('y1', '0');
-                    sliceLine.setAttribute('x2', lineBotX);
-                    sliceLine.setAttribute('y2', '100');
-                }
-
-                // Shadow: a thin diagonal polygon just behind the slice
-                if (sliceShadow) {
-                    const sw = 3; // shadow width in SVG units
-                    sliceShadow.setAttribute('points',
-                        `${lineTopX - sw},0 ${lineTopX},0 ${lineBotX},100 ${lineBotX - sw},100`
-                    );
-                }
-
-                // Glow: a slightly wider polygon with golden fill
-                if (sliceGlow) {
-                    const gw = 5; // glow width
-                    sliceGlow.setAttribute('points',
-                        `${lineTopX - gw},0 ${lineTopX + 1},0 ${lineBotX + 1},100 ${lineBotX - gw},100`
-                    );
-                }
-            }
-
-            // ---- NAME TRANSITION (synchronized with image reveal) ----
-            // English name: clip away from the left, same diagonal
-            heroNameEn.style.clipPath = `polygon(
-                ${i2_topRight}% 0,
-                100% 0,
-                100% 100%,
-                ${i2_bottomRight}% 100%
-            )`;
+    function applyHeroTransition(progress) {
+        // --- PHASE 1: English name visible, Tamil hidden ---
+        if (progress <= 0.4) {
             heroNameEn.style.opacity = '1';
-
-            // Tamil name: reveal from left, same boundary
-            heroNameTa.style.clipPath = `polygon(
-                0 0,
-                ${i2_topRight}% 0,
-                ${i2_bottomRight}% 100%,
-                0 100%
-            )`;
-
+            heroNameTa.style.opacity = '0';
             return;
         }
 
-        // --- PHASE 4: 0.60 → 0.80  — IMAGE 2 FULLY REVEALED ---
-        if (progress <= 0.80) {
-            const t = (progress - 0.60) / 0.20; // 0..1
-
-            // Image 2 fully visible
-            heroImage2.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
-
-            // Image 1 fully hidden when image 2 is revealed
-            heroImage1.style.transform = 'translate3d(0,0,0) scale(1.25)';
-            heroImage1.style.filter    = 'none';
-            heroImage1.style.opacity   = '0';
-
-            // English name fully hidden
-            heroNameEn.style.clipPath  = 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)';
-            heroNameEn.style.opacity   = '1';
-
-            // Tamil name fully visible
-            heroNameTa.style.clipPath  = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
-
-            // Slice gone
-            if (sliceEffect) sliceEffect.style.opacity = '0';
+        // --- PHASE 2: Crossfade transition ---
+        if (progress <= 0.7) {
+            const t = (progress - 0.4) / 0.3; // 0..1
+            heroNameEn.style.opacity = String(1 - t);
+            heroNameTa.style.opacity = String(t);
             return;
         }
 
-        // --- PHASE 5: 0.80 → 1.00  — SETTLE, GOLD GLOW ---
-        {
-            // Image 2 stays fully revealed, image 1 hidden
-            heroImage2.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
-            heroImage1.style.transform = 'translate3d(0,0,0) scale(1.25)';
-            heroImage1.style.filter    = 'none';
-            heroImage1.style.opacity   = '0';
+        // --- PHASE 3: Tamil name fully visible ---
+        heroNameEn.style.opacity = '0';
+        heroNameTa.style.opacity = '1';
+    }
 
-            // English fully hidden
-            heroNameEn.style.clipPath  = 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)';
-            heroNameEn.style.opacity   = '1';
+    // -------------------------------------------------------
+    //  ABOUT SECTION - Scroll-locked animation
+    //  Tamil first, then English flip at end
+    // -------------------------------------------------------
+    let aboutSectionEl, bgImage1El, bgImage2El;
 
-            // Tamil fully visible with subtle gold glow
-            heroNameTa.style.clipPath  = 'polygon(0 0, 100% 0, 100% 100%, 0 100%)';
+    function setupAboutSection() {
+        aboutSectionEl = document.getElementById('about');
+        bgImage1El = document.getElementById('bg-image-1');
+        bgImage2El = document.getElementById('bg-image-2');
 
-            // Slice gone
-            if (sliceEffect) sliceEffect.style.opacity = '0';
+        if (!aboutSectionEl || !bgImage1El || !bgImage2El) return;
+
+        // Create scroll container for locked scroll effect
+        const scrollContainer = document.createElement('div');
+        scrollContainer.id = 'about-scroll-wrapper';
+        scrollContainer.style.height = '400vh';
+        aboutSectionEl.parentNode.insertBefore(scrollContainer, aboutSectionEl);
+        scrollContainer.appendChild(aboutSectionEl);
+
+        // Make section sticky
+        aboutSectionEl.style.position = 'sticky';
+        aboutSectionEl.style.top = '0';
+        aboutSectionEl.style.height = '100vh';
+        aboutSectionEl.style.overflow = 'hidden';
+
+        window.addEventListener('scroll', onAboutScroll, { passive: true });
+        onAboutScroll();
+    }
+
+    function onAboutScroll() {
+        if (!aboutSectionEl) return;
+
+        const wrapper = document.getElementById('about-scroll-wrapper');
+        if (!wrapper) return;
+
+        const rect = wrapper.getBoundingClientRect();
+        const windowH = window.innerHeight;
+
+        // Progress: 0 when enters, 1 when leaves
+        let progress = Math.max(0, Math.min(1,
+            -rect.top / (wrapper.offsetHeight - windowH)
+        ));
+
+        applyAboutAnimation(progress);
+    }
+
+    function applyAboutAnimation(progress) {
+        if (!bgImage1El || !bgImage2El) return;
+
+        const cards = document.querySelectorAll('.about-card');
+
+        // Phase 1: Image transition (0% - 50% of scroll)
+        const imageProgress = Math.min(1, progress / 0.5);
+
+        bgImage1El.style.opacity = String(1 - imageProgress);
+        bgImage1El.style.transform = 'none';
+
+        bgImage2El.style.opacity = '1';
+        bgImage2El.style.clipPath = `inset(0 ${100 - imageProgress * 100}% 0 0)`;
+
+        // Phase 2: Cards flip from Tamil to English (50% - 100% of scroll)
+        // Once flipped, cards stay flipped (don't flip back when scrolling up)
+        const flipStart = 0.5;
+        const flipEnd = 1.0;
+
+        if (progress >= flipStart) {
+            const flipProgress = Math.min(1, (progress - flipStart) / (flipEnd - flipStart));
+            const totalCards = cards.length;
+
+            cards.forEach((card, index) => {
+                // Reverse stagger - right cards flip first (right to left reveal)
+                const reverseIndex = totalCards - 1 - index;
+                const delay = reverseIndex * 0.15;
+                const cardProgress = Math.max(0, Math.min(1, (flipProgress - delay) / (1 - delay * totalCards)));
+
+                if (cardProgress > 0) {
+                    card.classList.add('flipped');
+                }
+                // Note: Once flipped, card stays flipped (no remove)
+            });
+        }
+
+        // Final state
+        if (progress >= 0.98) {
+            bgImage1El.style.opacity = '0';
+            bgImage2El.style.opacity = '1';
+            bgImage2El.style.clipPath = 'inset(0 0% 0 0)';
+            cards.forEach(card => card.classList.add('flipped'));
+        }
+
+        // Reset only when at very top (progress near 0)
+        if (progress <= 0.01) {
+            bgImage1El.style.opacity = '1';
+            bgImage2El.style.opacity = '0';
+            bgImage2El.style.clipPath = 'inset(0 100% 0 0)';
+            cards.forEach(card => card.classList.remove('flipped'));
         }
     }
 
@@ -424,5 +349,340 @@
             });
         }
     };
+
+})();
+
+// ==========================================================
+//  DYNAMIC DATA — fetch from backend API
+// ==========================================================
+(function () {
+    'use strict';
+
+    // Helper: escape HTML to prevent XSS
+    function esc(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // Helper: build image slider markup
+    function buildImageMarkup(imageSources, title, wrapperClass, imgClass, frameClass) {
+        if (!imageSources || !imageSources.length) return '';
+        const isSlideshow = imageSources.length > 1;
+        const slideshowClass = isSlideshow ? ' project-image-frame--slideshow' : '';
+        const imagesJson = esc(JSON.stringify(imageSources));
+
+        const dotsHtml = isSlideshow
+            ? `<div class="slider-dots">${imageSources.map((_, i) => `<span class="slider-dot${i === 0 ? ' active' : ''}"></span>`).join('')}</div>`
+            : '';
+        const btnsHtml = isSlideshow
+            ? `<button class="slider-btn slider-btn--prev" aria-label="Previous">&#8249;</button>
+               <button class="slider-btn slider-btn--next" aria-label="Next">&#8250;</button>`
+            : '';
+
+        return `<div class="${wrapperClass}">
+            <div class="${frameClass}${slideshowClass}" data-images='${imagesJson}' data-title="${esc(title)}">
+                <img class="${imgClass}" src="${esc(imageSources[0])}" alt="${esc(title)}">
+                ${btnsHtml}
+                ${dotsHtml}
+            </div>
+        </div>`;
+    }
+
+    // Image slider: wire up prev/next buttons after render
+    function initImageSliders() {
+        document.querySelectorAll('.project-image-frame--slideshow, .media-frame.project-image-frame--slideshow').forEach(frame => {
+            if (frame.dataset.sliderInit) return;
+            frame.dataset.sliderInit = '1';
+
+            let images;
+            try { images = JSON.parse(frame.dataset.images); } catch { return; }
+            if (!images || images.length < 2) return;
+
+            let current = 0;
+            const img = frame.querySelector('img');
+            const dots = frame.querySelectorAll('.slider-dot');
+
+            function goTo(idx) {
+                current = (idx + images.length) % images.length;
+                img.style.opacity = '0';
+                setTimeout(() => {
+                    img.src = images[current];
+                    img.style.opacity = '1';
+                }, 200);
+                dots.forEach((d, i) => d.classList.toggle('active', i === current));
+            }
+
+            img.style.transition = 'opacity 0.2s ease';
+
+            frame.querySelector('.slider-btn--prev')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                goTo(current - 1);
+            });
+            frame.querySelector('.slider-btn--next')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                goTo(current + 1);
+            });
+            dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+        });
+    }
+
+    // -------------------------------------------------------
+    //  FETCH PROJECTS
+    // -------------------------------------------------------
+    async function fetchProjects() {
+        try {
+            const res = await fetch('/api/projects');
+            if (!res.ok) throw new Error('API error');
+            const projects = await res.json();
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+            if (!projects.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No projects found. Add some from <a href="/admin" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
+                return;
+            }
+            container.innerHTML = projects.map(p => {
+                const techTags = (p.technologies || []).map(t => `<span class="tech-tag">${esc(t)}</span>`).join('');
+                const imgs = Array.isArray(p.images) && p.images.length ? p.images : (p.image ? [p.image] : []);
+                const slideshowId = `project-slideshow-${esc(p.number || '0')}`;
+                const imageMarkup = buildSlideshowMarkup(imgs, p.title, slideshowId);
+                return `<div class="project-card">
+                    ${imageMarkup}
+                    <div class="project-num">${esc(p.number || '')}</div>
+                    <div class="project-title">${esc(p.title)}</div>
+                    <div class="project-date">${esc(p.date || '')}</div>
+                    <p class="project-desc">${esc(p.description)}</p>
+                    <div class="project-tech">${techTags}</div>
+                    ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noreferrer" class="cert-link" style="margin:0 2rem 1.5rem;">View Project ↗</a>` : ''}
+                </div>`;
+            }).join('');
+            initProjectSlideshows();
+        } catch (err) {
+            console.error('Failed to load projects:', err);
+        }
+    }
+
+    // -------------------------------------------------------
+    //  BUILD SLIDESHOW MARKUP
+    // -------------------------------------------------------
+    function buildSlideshowMarkup(images, title, slideshowId) {
+        if (!images || !images.length) {
+            return `<div class="project-media"><div class="project-image-frame"><div class="project-image-placeholder"></div></div></div>`;
+        }
+        const imagesJson = esc(JSON.stringify(images));
+        const dotsHtml = images.map((_, i) => `<span class="slideshow-dot${i === 0 ? ' active' : ''}" data-index="${i}"></span>`).join('');
+
+        return `<div class="project-media">
+            <div class="project-image-frame project-slideshow" id="${slideshowId}" data-images='${imagesJson}'>
+                <img class="project-image" src="${esc(images[0])}" alt="${esc(title)}">
+                <div class="slideshow-dots">${dotsHtml}</div>
+            </div>
+        </div>`;
+    }
+
+    // -------------------------------------------------------
+    //  INIT PROJECT SLIDESHOWS
+    // -------------------------------------------------------
+    function initProjectSlideshows() {
+        document.querySelectorAll('.project-slideshow').forEach(slideshow => {
+            if (slideshow.dataset.sliderInit) return;
+            slideshow.dataset.sliderInit = '1';
+
+            let images;
+            try { images = JSON.parse(slideshow.dataset.images); } catch { return; }
+            if (!images || images.length < 2) return;
+
+            let currentIndex = 0;
+            const img = slideshow.querySelector('img');
+            const dots = slideshow.querySelectorAll('.slideshow-dot');
+            let interval;
+
+            function showImage(index) {
+                currentIndex = (index + images.length) % images.length;
+                img.style.opacity = '0';
+                setTimeout(() => {
+                    img.src = images[currentIndex];
+                    img.style.opacity = '1';
+                }, 300);
+                dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+            }
+
+            function nextImage() {
+                showImage(currentIndex + 1);
+            }
+
+            function startAutoplay() {
+                interval = setInterval(nextImage, 3000);
+            }
+
+            function stopAutoplay() {
+                clearInterval(interval);
+            }
+
+            // Dot click handlers
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    showImage(index);
+                    stopAutoplay();
+                    startAutoplay();
+                });
+            });
+
+            // Pause on hover
+            slideshow.addEventListener('mouseenter', stopAutoplay);
+            slideshow.addEventListener('mouseleave', startAutoplay);
+
+            img.style.transition = 'opacity 0.3s ease';
+
+            // Start autoplay
+            startAutoplay();
+        });
+    }
+
+    // -------------------------------------------------------
+    //  FETCH SKILLS
+    // -------------------------------------------------------
+    async function fetchSkills() {
+        try {
+            const res = await fetch('/api/skills');
+            if (!res.ok) throw new Error('API error');
+            const skills = await res.json();
+            const container = document.getElementById('skills-container');
+            if (!container) return;
+            if (!skills.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No skills found. Add some from <a href="/admin" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
+                return;
+            }
+            container.innerHTML = skills.map(s => `
+                <div class="skill-card">
+                    <div class="skill-icon">${s.icon || '🛠️'}</div>
+                    <div class="skill-category">${esc(s.category)}</div>
+                    <div class="skill-tags">${(s.items || []).map(item => `<span class="tag">${esc(item)}</span>`).join('')}</div>
+                </div>`).join('');
+        } catch (err) {
+            console.error('Failed to load skills:', err);
+        }
+    }
+
+    // -------------------------------------------------------
+    //  FETCH ACHIEVEMENTS
+    // -------------------------------------------------------
+    async function fetchAchievements() {
+        try {
+            const res = await fetch('/api/achievements');
+            if (!res.ok) throw new Error('API error');
+            const achievements = await res.json();
+            const container = document.getElementById('achievements-container');
+            if (!container) return;
+            if (!achievements.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No achievements found. Add some from <a href="/admin" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
+                return;
+            }
+            container.innerHTML = achievements.map(a => `
+                <div class="achieve-card">
+                    <div class="achieve-icon">${a.icon || '🏆'}</div>
+                    <div class="achieve-text">${esc(a.text)}</div>
+                </div>`).join('');
+        } catch (err) {
+            console.error('Failed to load achievements:', err);
+        }
+    }
+
+    // -------------------------------------------------------
+    //  FETCH COURSES
+    // -------------------------------------------------------
+    async function fetchCourses() {
+        try {
+            const res = await fetch('/api/courses');
+            if (!res.ok) throw new Error('API error');
+            const courses = await res.json();
+            const container = document.getElementById('courses-container');
+            if (!container) return;
+            if (!courses.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No courses found. Add some from <a href="/admin" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
+                return;
+            }
+            container.innerHTML = courses.map(c => {
+                const imgs = Array.isArray(c.images) && c.images.length ? c.images : (c.image ? [c.image] : []);
+                const imageMarkup = buildImageMarkup(imgs, c.title, 'course-media', 'media-image', 'media-frame');
+                return `<div class="course-card">
+                    ${imageMarkup}
+                    <div class="course-title">${esc(c.title)}</div>
+                    <div class="course-platform">${esc(c.platform || '')}</div>
+                    <div class="course-date">${esc(c.date || '')}</div>
+                    ${c.link ? `<a class="course-link" href="${esc(c.link)}" target="_blank" rel="noreferrer">View Course ↗</a>` : ''}
+                    ${c.certificate_url ? `<a class="course-link" href="${esc(c.certificate_url)}" target="_blank" rel="noreferrer">Certificate ↗</a>` : ''}
+                </div>`;
+            }).join('');
+            initImageSliders();
+        } catch (err) {
+            console.error('Failed to load courses:', err);
+        }
+    }
+
+    // -------------------------------------------------------
+    //  ABOUT SECTION SLIDESHOW
+    // -------------------------------------------------------
+    function setupAboutSlideshow() {
+        const stage = document.getElementById('about-vijay-stage');
+        if (!stage) return;
+
+        const images = stage.querySelectorAll('.about-vijay-image');
+        const dots = document.querySelectorAll('.slideshow-dots .dot');
+        if (images.length < 2) return;
+
+        let currentIndex = 0;
+        let interval;
+
+        function showImage(index) {
+            images.forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+            });
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+            currentIndex = index;
+        }
+
+        function nextImage() {
+            showImage((currentIndex + 1) % images.length);
+        }
+
+        function startAutoplay() {
+            interval = setInterval(nextImage, 3000);
+        }
+
+        function stopAutoplay() {
+            clearInterval(interval);
+        }
+
+        // Dot click handlers
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                showImage(index);
+                stopAutoplay();
+                startAutoplay();
+            });
+        });
+
+        // Pause on hover
+        stage.addEventListener('mouseenter', stopAutoplay);
+        stage.addEventListener('mouseleave', startAutoplay);
+
+        // Start autoplay
+        startAutoplay();
+    }
+
+    // Boot all fetches on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchProjects();
+        fetchSkills();
+        fetchAchievements();
+        fetchCourses();
+    });
 
 })();
