@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
-const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 require('dotenv').config();
 
 // Models
@@ -15,20 +16,23 @@ const Skill = require('./models/Skill');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Ensure uploads directory exists (inside project folder)
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-// Multer config for local image storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + path.extname(file.originalname);
-    cb(null, uniqueName);
+// Multer with Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'portfolio',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    transformation: [{ width: 800, height: 600, crop: 'limit' }]
   }
 });
+
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -54,7 +58,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.static(path.join(__dirname)));
-app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB Connection
 const mongoURI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/portfolio';
@@ -96,7 +99,7 @@ app.post('/api/projects', upload.array('images', 8), async (req, res) => {
       techArray = [];
     }
 
-    const images = (req.files || []).map(file => `/uploads/${file.filename}`);
+    const images = (req.files || []).map(file => file.path);
 
     const newProject = new Project({
       title,
@@ -137,15 +140,15 @@ app.put('/api/projects/:id', upload.array('images', 8), async (req, res) => {
       // Remove any images that are no longer in the kept list
       const removedImages = existingImages.filter(img => !keptImages.includes(img));
       removedImages.forEach(img => {
-        if (img.startsWith('/uploads/')) {
-          const imgPath = path.join(__dirname, img);
-          if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+        if (img.includes('cloudinary')) {
+          const publicId = img.split('/').pop().split('.')[0];
+          cloudinary.uploader.destroy(`portfolio/${publicId}`);
         }
       });
       existingImages = keptImages;
     }
 
-    const uploadedImages = (req.files || []).map(file => `/uploads/${file.filename}`);
+    const uploadedImages = (req.files || []).map(file => file.path);
     const images = [...existingImages, ...uploadedImages];
 
     project.title = title || project.title;
@@ -208,7 +211,7 @@ app.get('/api/courses/:id', async (req, res) => {
 app.post('/api/courses', upload.array('images', 8), async (req, res) => {
   try {
     const { title, platform, date, link, certificate_url } = req.body;
-    const images = (req.files || []).map(file => `/uploads/${file.filename}`);
+    const images = (req.files || []).map(file => file.path);
     const newCourse = new Course({
       title,
       platform,
@@ -238,15 +241,15 @@ app.put('/api/courses/:id', upload.array('images', 8), async (req, res) => {
       const keptImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
       const removedImages = existingImages.filter(img => !keptImages.includes(img));
       removedImages.forEach(img => {
-        if (img.startsWith('/uploads/')) {
-          const imgPath = path.join(__dirname, img);
-          if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+        if (img.includes('cloudinary')) {
+          const publicId = img.split('/').pop().split('.')[0];
+          cloudinary.uploader.destroy(`portfolio/${publicId}`);
         }
       });
       existingImages = keptImages;
     }
 
-    const uploadedImages = (req.files || []).map(file => `/uploads/${file.filename}`);
+    const uploadedImages = (req.files || []).map(file => file.path);
     const images = [...existingImages, ...uploadedImages];
 
     course.title = title || course.title;
@@ -297,7 +300,7 @@ app.get('/api/certifications/:id', async (req, res) => {
 app.post('/api/certifications', upload.array('images', 8), async (req, res) => {
   try {
     const { title, issuer, date, credential_id, link } = req.body;
-    const images = (req.files || []).map(file => `/uploads/${file.filename}`);
+    const images = (req.files || []).map(file => file.path);
     const newCert = new Course({
       title,
       type: 'certification',
@@ -327,15 +330,15 @@ app.put('/api/certifications/:id', upload.array('images', 8), async (req, res) =
       const keptImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
       const removedImages = existingImages.filter(img => !keptImages.includes(img));
       removedImages.forEach(img => {
-        if (img.startsWith('/uploads/')) {
-          const imgPath = path.join(__dirname, img);
-          if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+        if (img.includes('cloudinary')) {
+          const publicId = img.split('/').pop().split('.')[0];
+          cloudinary.uploader.destroy(`portfolio/${publicId}`);
         }
       });
       existingImages = keptImages;
     }
 
-    const uploadedImages = (req.files || []).map(file => `/uploads/${file.filename}`);
+    const uploadedImages = (req.files || []).map(file => file.path);
     const images = [...existingImages, ...uploadedImages];
 
     cert.title = title || cert.title;
