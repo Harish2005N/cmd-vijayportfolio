@@ -213,17 +213,17 @@
         if (progress >= flipStart) {
             const flipProgress = Math.min(1, (progress - flipStart) / (flipEnd - flipStart));
             const totalCards = cards.length;
+            const staggerStep = 0.08;
+            const flipDuration = 0.18;
 
             cards.forEach((card, index) => {
-                // Reverse stagger - right cards flip first (right to left reveal)
                 const reverseIndex = totalCards - 1 - index;
-                const delay = reverseIndex * 0.15;
-                const cardProgress = Math.max(0, Math.min(1, (flipProgress - delay) / (1 - delay * totalCards)));
+                const delay = reverseIndex * staggerStep;
+                const cardProgress = Math.max(0, Math.min(1, (flipProgress - delay) / flipDuration));
 
                 if (cardProgress > 0) {
                     card.classList.add('flipped');
                 }
-                // Note: Once flipped, card stays flipped (no remove)
             });
         }
 
