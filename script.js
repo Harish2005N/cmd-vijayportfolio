@@ -684,4 +684,69 @@
         fetchCourses();
     });
 
+    // -------------------------------------------------------
+    //  FULLSCREEN IMAGE LIGHTBOX
+    // -------------------------------------------------------
+    function setupImageLightbox() {
+        const lightbox = document.getElementById('image-lightbox');
+        if (!lightbox) return;
+
+        const lightboxImg = lightbox.querySelector('.lightbox-image');
+        const closeBtn = lightbox.querySelector('.lightbox-close');
+        const backdrop = lightbox.querySelector('.lightbox-backdrop');
+
+        function openLightbox(src) {
+            if (!src) return;
+            lightboxImg.src = src;
+            lightbox.classList.remove('is-closing');
+            lightbox.classList.add('is-open');
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.add('is-closing');
+            lightbox.classList.remove('is-open');
+            lightbox.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+
+            setTimeout(() => {
+                if (!lightbox.classList.contains('is-open')) {
+                    lightboxImg.src = '';
+                }
+            }, 700);
+        }
+
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeLightbox();
+        });
+
+        backdrop.addEventListener('click', closeLightbox);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
+                closeLightbox();
+            }
+        });
+
+        // Clickable course/certificate images
+        document.addEventListener('click', (e) => {
+            const mediaImage = e.target.closest('.media-image');
+            if (!mediaImage) return;
+
+            const src = mediaImage.getAttribute('src');
+            if (src) {
+                openLightbox(src);
+            }
+        });
+    }
+
+    // Initialize lightbox after courses load
+    const originalFetchCourses = fetchCourses;
+    fetchCourses = async function () {
+        await originalFetchCourses();
+        setupImageLightbox();
+    };
+
 })();
