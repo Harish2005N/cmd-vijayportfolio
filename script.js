@@ -43,6 +43,7 @@
         // Other portfolio features
         setupScrollToTop();
         setupSmoothScrolling();
+        setupMobileNav();
         setupScrollAnimations();
         setupHoverEffects();
     });
@@ -265,6 +266,49 @@
 
         scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // -------------------------------------------------------
+    //  MOBILE NAV TOGGLE
+    // -------------------------------------------------------
+    function setupMobileNav() {
+        const toggle = document.getElementById('nav-toggle');
+        const links = document.getElementById('nav-links');
+        if (!toggle || !links) return;
+
+        function openNav() {
+            toggle.classList.add('is-open');
+            links.classList.add('is-open');
+            toggle.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNav() {
+            toggle.classList.remove('is-open');
+            links.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+
+        toggle.addEventListener('click', () => {
+            if (links.classList.contains('is-open')) {
+                closeNav();
+            } else {
+                openNav();
+            }
+        });
+
+        links.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                closeNav();
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && links.classList.contains('is-open')) {
+                closeNav();
+            }
         });
     }
 

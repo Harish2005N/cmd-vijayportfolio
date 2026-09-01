@@ -166,6 +166,47 @@ body {
     width: 100%;
 }
 
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1001;
+}
+
+.nav-toggle span {
+    display: block;
+    width: 26px;
+    height: 2px;
+    background: var(--text-white);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-toggle.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
 /* ==========================================================
    HERO SCROLL SECTION — 200vh tall, with sticky viewport
    ========================================================== */
@@ -533,8 +574,8 @@ body {
 .about-cards-row {
     display: flex;
     gap: 1rem;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
+    justify-content: center;
+    flex-wrap: wrap;
     width: 100%;
     padding: 1rem 0;
 }
@@ -544,6 +585,7 @@ body {
     width: 150px;
     height: 200px;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .card-inner {
@@ -570,30 +612,6 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem;
     perspective: 1000px;
-}
-
-.about-card {
-    position: relative;
-    height: 200px;
-    cursor: pointer;
-}
-
-.card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    transition: transform 1.8s ease-out;
-}
-
-/* Default: show Tamil (back side) */
-.about-card .card-inner {
-    transform: rotateY(180deg);
-}
-
-/* When flipped: show English (front side) */
-.about-card.flipped .card-inner {
-    transform: rotateY(0deg);
 }
 
 .card-front,
@@ -989,6 +1007,43 @@ body {
     RESPONSIVE DESIGN
     ========================================================== */
 @media (max-width: 900px) {
+    .navbar {
+        padding: 1.2rem 0;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(12px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-20px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+        z-index: 1000;
+    }
+
+    .nav-links.is-open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    .nav-link {
+        font-size: 1.2rem;
+    }
+
     .hero-inner {
         grid-template-columns: 1fr;
         width: min(1400px, calc(100% - 40px));
@@ -1010,6 +1065,8 @@ body {
 
     .hero-buttons {
         justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
     }
 
     .hero-image-column {
@@ -1017,41 +1074,43 @@ body {
     }
 
     .hero-profile-wrap {
-        width: min(300px, 100%);
+        width: min(280px, 80%);
     }
 
     .hero-vijay-stage {
-        width: min(500px, 100%);
+        width: min(450px, 100%);
     }
 
-    .about-content {
-        grid-template-columns: 1fr;
+    .about-section {
+        padding: 60px 0;
     }
 
-    .about-right {
-        position: relative;
-        top: 0;
+    .about-section .container {
+        padding: 40px 1.5rem;
     }
 
-    .about-content {
-        gap: 1.5rem;
+    .section-title {
+        font-size: 2.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .about-text {
+        font-size: 1rem;
     }
 
     .about-cards-row {
         gap: 0.8rem;
+        justify-content: center;
     }
 
     .about-card {
-        width: 120px;
+        width: calc(50% - 0.5rem);
         height: 160px;
-    }
-
-    .card-back span {
-        font-size: 1.5rem;
+        max-width: 160px;
     }
 
     .card-front h3 {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .card-front p {
@@ -1059,77 +1118,159 @@ body {
     }
 
     .card-back span {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
 
-    .card-front h3 {
-        font-size: 1.1rem;
+    .skills-section,
+    .projects-section,
+    .courses-section,
+    .achievements-section,
+    .contact-section {
+        padding: 70px 0;
     }
 
-    .card-front p {
-        font-size: 0.75rem;
+    .btn {
+        padding: 0.8rem 1.4rem;
+        font-size: 0.8rem;
+    }
+
+    .hero-name {
+        font-size: clamp(40px, 8vw, 70px);
+    }
+
+    .hero-name-ta {
+        font-size: clamp(36px, 7vw, 60px);
     }
 }
 
 @media (max-width: 768px) {
     .hero-name {
-        font-size: 2.8rem;
+        font-size: clamp(32px, 9vw, 48px);
     }
 
     .hero-name-container {
-        height: clamp(80px, 14vw, 120px);
-        margin-bottom: 20px;
+        height: clamp(60px, 12vw, 100px);
+        margin-bottom: 16px;
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
-        margin-bottom: 20px;
+        font-size: 1rem;
+        margin-bottom: 16px;
     }
 
     .hero-description {
-        font-size: 15px;
-        margin-bottom: 28px;
+        font-size: 14px;
+        margin-bottom: 24px;
     }
 
     .hero-profile-wrap {
-        width: min(220px, 100%);
+        width: min(200px, 75%);
+    }
+
+    .about-section {
+        padding: 50px 0;
+    }
+
+    .about-section .container {
+        padding: 30px 1rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
     }
 
     .about-cards-row {
-        gap: 0.5rem;
+        gap: 0.6rem;
     }
 
     .about-card {
-        width: 100px;
+        width: calc(50% - 0.4rem);
         height: 140px;
+        max-width: 140px;
     }
 
     .card-back span {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 
     .card-front h3 {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
 
     .card-front p {
         font-size: 0.65rem;
     }
 
-    .section-title {
-        font-size: 2rem;
-    }
-
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .skills-grid {
-        grid-template-columns: 1fr;
+    .card-front,
+    .card-back {
+        padding: 0.8rem;
     }
 
     .hero-scroll-section {
-        height: 180vh;
+        height: 160vh;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+    }
+
+    .contact-link {
+        font-size: 0.95rem;
+    }
+
+    .projects-grid,
+    .skills-grid,
+    .course-grid,
+    .achievements-grid {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-card {
+        width: calc(50% - 0.3rem);
+        height: 120px;
+        max-width: 130px;
+    }
+
+    .card-front h3 {
+        font-size: 0.7rem;
+    }
+
+    .card-front p {
+        font-size: 0.6rem;
+    }
+
+    .card-back span {
+        font-size: 1rem;
+    }
+
+    .card-front,
+    .card-back {
+        padding: 0.6rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .hero-profile-wrap {
+        width: min(160px, 70%);
+    }
+
+    .btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.75rem;
+        max-width: 240px;
     }
 }
 
