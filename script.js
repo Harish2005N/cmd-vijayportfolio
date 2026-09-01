@@ -158,6 +158,24 @@
 
         if (!aboutSectionEl || !bgImage1El || !bgImage2El) return;
 
+        // Detect mobile — disable scroll-lock animation for touch devices
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+        if (isMobile) {
+            // On mobile: show vijay2.png as visible background directly
+            bgImage2El.style.opacity = '1';
+            bgImage2El.style.clipPath = 'inset(0 0% 0 0)';
+            bgImage1El.style.opacity = '0';
+            // Let the about section flow naturally
+            aboutSectionEl.style.position = 'relative';
+            aboutSectionEl.style.height = 'auto';
+            aboutSectionEl.style.overflow = 'visible';
+            // Show all cards flipped (English visible) on mobile
+            const cards = document.querySelectorAll('.about-card');
+            cards.forEach(card => card.classList.add('flipped'));
+            return;
+        }
+
         // Create scroll container for locked scroll effect
         const scrollContainer = document.createElement('div');
         scrollContainer.id = 'about-scroll-wrapper';

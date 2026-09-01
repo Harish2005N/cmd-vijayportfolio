@@ -1236,10 +1236,24 @@ body {
 }
 
 @media (max-width: 480px) {
+    .about-bg-image {
+        display: block;
+    }
+
+    .about-cards-row {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.6rem;
+    }
+
     .about-card {
         width: calc(50% - 0.3rem);
         height: 120px;
         max-width: 130px;
+    }
+
+    .about-section {
+        min-height: 120vh;
     }
 
     .card-front h3 {
