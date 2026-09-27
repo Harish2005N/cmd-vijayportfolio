@@ -6,6 +6,13 @@
     'use strict';
 
     // -------------------------------------------------------
+    //  API CONFIGURATION (Render Backend URL when deployed)
+    // -------------------------------------------------------
+    const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? ''
+        : 'https://cmd-vijayportfolio.onrender.com';
+
+    // -------------------------------------------------------
     //  GLOBAL REFERENCES (set once after DOM ready)
     // -------------------------------------------------------
     let introScreen, navbar;
@@ -498,13 +505,13 @@
     // -------------------------------------------------------
     async function fetchProjects() {
         try {
-            const res = await fetch('/api/projects');
+            const res = await fetch(`${API_BASE}/api/projects`);
             if (!res.ok) throw new Error('API error');
             const projects = await res.json();
             const container = document.getElementById('projects-container');
             if (!container) return;
             if (!projects.length) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No projects found. Add some from <a href="/admin" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No projects found. Add some from <a href="admin.html" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
                 return;
             }
             container.innerHTML = projects.map(p => {
@@ -609,13 +616,13 @@
     // -------------------------------------------------------
     async function fetchSkills() {
         try {
-            const res = await fetch('/api/skills');
+            const res = await fetch(`${API_BASE}/api/skills`);
             if (!res.ok) throw new Error('API error');
             const skills = await res.json();
             const container = document.getElementById('skills-container');
             if (!container) return;
             if (!skills.length) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No skills found. Add some from <a href="/admin" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No skills found. Add some from <a href="admin.html" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
                 return;
             }
             container.innerHTML = skills.map(s => `
@@ -634,13 +641,13 @@
     // -------------------------------------------------------
     async function fetchAchievements() {
         try {
-            const res = await fetch('/api/achievements');
+            const res = await fetch(`${API_BASE}/api/achievements`);
             if (!res.ok) throw new Error('API error');
             const achievements = await res.json();
             const container = document.getElementById('achievements-container');
             if (!container) return;
             if (!achievements.length) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No achievements found. Add some from <a href="/admin" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No achievements found. Add some from <a href="admin.html" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
                 return;
             }
             container.innerHTML = achievements.map(a => `
@@ -658,13 +665,13 @@
     // -------------------------------------------------------
     async function fetchCourses() {
         try {
-            const res = await fetch('/api/courses');
+            const res = await fetch(`${API_BASE}/api/courses`);
             if (!res.ok) throw new Error('API error');
             const courses = await res.json();
             const container = document.getElementById('courses-container');
             if (!container) return;
             if (!courses.length) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No courses found. Add some from <a href="/admin" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:3rem;">No courses found. Add some from <a href="admin.html" style="color:var(--primary-gold)">Admin Panel</a>!</p>';
                 return;
             }
             container.innerHTML = courses.map(c => {
