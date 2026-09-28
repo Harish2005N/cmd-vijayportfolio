@@ -427,6 +427,11 @@
 (function () {
     'use strict';
 
+    // API Configuration (Render Backend URL when deployed)
+    const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? ''
+        : 'https://cmd-vijayportfolio.onrender.com';
+
     // Helper: escape HTML to prevent XSS
     function esc(str) {
         if (!str) return '';
