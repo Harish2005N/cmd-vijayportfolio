@@ -1,5 +1,9 @@
 {
   "installCommand": null,
+  "builds": [{
+    "src": "**/*.{html,js,css,png,jpg,jpeg,gif,webp,svg,ico}",
+    "use": "@vercel/static"
+  }],
   "rewrites": [
     {
       "source": "/admin",
